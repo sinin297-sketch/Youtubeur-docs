@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Documentation YouTubeurs</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #0d1117;
+        color: white;
+    }
+
+    header {
+        background: #111820;
+        padding: 30px 20px;
+        text-align: center;
+        border-bottom: 1px solid #30363d;
+    }
+
+    header h1 {
+        margin: 0 0 10px;
+        font-size: 32px;
+    }
+
+    header p {
+        margin: 0;
+        color: #8b949e;
+    }
+
+    main {
+        max-width: 1100px;
+        margin: auto;
+        padding: 25px 15px;
+    }
+
+    .barre {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    #recherche {
+        flex: 1;
+        min-width: 220px;
+    }
+
+    input,
+    textarea {
+        width: 100%;
+        padding: 12px;
+        background: #0d1117;
+        color: white;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        outline: none;
+    }
+
+    textarea {
+        resize: vertical;
+    }
+
+    button {
+        padding: 11px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        background: #ff304f;
+        color: white;
+    }
+
+    button:hover {
+        opacity: 0.85;
+    }
+
+    .bouton-secondaire {
+        background: #21262d;
+        border: 1px solid #30363d;
+    }
+
+    .grille {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+        gap: 18px;
+    }
+
+    .carte {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .image-couverture {
+        width: 100%;
+        height: 170px;
+        object-fit: cover;
+        background: #21262d;
+    }
+
+    .sans-image {
+        height: 170px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 55px;
+    }
+
+    .contenu-carte {
+        padding: 15px;
+    }
+
+    .contenu-carte h3 {
+        margin-top: 0;
+        margin-bottom: 8px;
+    }
+
+    .informations {
+        color: #8b949e;
+        font-size: 14px;
+    }
+
+    .description {
+        color: #c9d1d9;
+        line-height: 1.5;
+    }
+
+    .actions {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        margin-top: 15px;
+    }
+
+    .vide {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 10px;
+        color: #8b949e;
+    }
+
+    /* Fenêtre */
+    .fenetre {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.8);
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        z-index: 10;
+    }
+
+    .fenetre.active {
+        display: flex;
+    }
+
+    .boite {
+        width: 100%;
+        max-width: 750px;
+        max-height: 90vh;
+        overflow-y: auto;
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 14px;
+        padding: 22px;
+    }
+
+    .champ {
+        margin-bottom: 15px;
+    }
+
+    .champ label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: bold;
+    }
+
+    .ligne {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .galerie {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .galerie img {
+        width: 100px;
+        height: 75px;
+        object-fit: cover;
+        border-radius: 7px;
+        cursor: pointer;
+        border: 1px solid #30363d;
+    }
+
+    .pdf {
+        display: inline-block;
+        padding: 10px;
+        margin: 5px;
+        background: #21262d;
+        color: white;
+        border-radius: 7px;
+        text-decoration: none;
+    }
+
+    .pdf:hover {
+        background: #30363d;
+    }
+
+    a {
+        color: #58a6ff;
+    }
+
+    /* Visionneuse d'image */
+    #visionneuse {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+    }
+
+    #visionneuse.active {
+        display: flex;
+    }
+
+    #imageGrande {
+        max-width: 95%;
+        max-height: 90%;
+    }
+
+    #fermerImage {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 25px;
+    }
+
+    @media (max-width: 600px) {
+        .ligne {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>📚 Documentation YouTubeurs</h1>
+    <p>Crée et organise tes fiches sur les créateurs YouTube</p>
+</header>
+
+<main>
+
+    <div class="barre">
+        <input
+            id="recherche"
+            type="text"
+            placeholder="🔎 Rechercher un YouTubeur..."
+            oninput="afficherYouTubeurs()"
+        >
+
+        <button onclick="ouvrirAjout()">
+            ➕ Ajouter un YouTubeur
+        </button>
+    </div>
+
+    <div id="grille" class="grille"></div>
+
+</main>
+
+
+<!-- FENÊTRE D'AJOUT / MODIFICATION -->
+
+<div id="fenetreFormulaire" class="fenetre">
+
+    <div class="boite">
+
+        <h2 id="titreFormulaire">
+            Ajouter un YouTubeur
+        </h2>
+
+        <form id="formulaire">
+
+            <div class="ligne">
+
+                <div class="champ">
+                    <label>Nom / Pseudo *</label>
+
+                    <input
+                        id="nom"
+                        type="text"
+                        required
+                        placeholder="Exemple : Squeezie"
+                    >
+                </div>
+
+                <div class="champ">
+                    <label>Catégorie</label>
+
+                    <input
+                        id="categorie"
+                        type="text"
+                        placeholder="Gaming, humour, vlog..."
+                    >
+                </div>
+
+            </div>
+
+
+            <div class="champ">
+
+                <label>Description</label>
+
+                <textarea
+                    id="description"
+                    rows="6"
+                    placeholder="Écris ici les informations concernant le YouTubeur..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="ligne">
+
+                <div class="champ">
+
+                    <label>Lien YouTube</label>
+
+                    <input
+                        id="youtube"
+                        type="url"
+                        placeholder="https://youtube.com/..."
+                    >
+
+                </div>
+
+
+                <div class="champ">
+
+                    <label>Autre lien</label>
+
+                    <input
+                        id="autreLien"
+                        type="url"
+                        placeholder="https://..."
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="champ">
+
+                <label>🖼️ Ajouter des images</label>
+
+                <input
+                    id="images"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                >
+
+                <small>
+                    Tu peux sélectionner plusieurs images.
+                </small>
+
+            </div>
+
+
+            <div class="champ">
+
+                <label>📄 Ajouter des PDF</label>
+
+                <input
+                    id="pdfs"
+                    type="file"
+                    accept="application/pdf"
+                    multiple
+                >
+
+                <small>
+                    Tu peux sélectionner plusieurs PDF.
+                </small>
+
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    type="button"
+                    class="bouton-secondaire"
+                    onclick="fermerFenetre()"
+                >
+                    Annuler
+                </button>
+
+                <button type="submit">
+                    💾 Enregistrer
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- FENÊTRE DE DÉTAILS -->
+
+<div id="fenetreDetails" class="fenetre">
+
+    <div class="boite">
+
+        <h2 id="titreDetails"></h2>
+
+        <div id="contenuDetails"></div>
+
+        <div class="actions">
+
+            <button
+                class="bouton-secondaire"
+                onclick="fermerDetails()"
+            >
+                Fermer
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- VISIONNEUSE IMAGE -->
+
+<div id="visionneuse" onclick="fermerImage()">
+
+    <button id="fermerImage">
+        ✕
+    </button>
+
+    <img id="imageGrande">
+
+</div>
+
+
+<script>
+
+/* ==============================
+   STOCKAGE
+============================== */
+
+const CLE_STOCKAGE = "documentation_youtubeurs";
+
+let youtubeurs = JSON.parse(
+    localStorage.getItem(CLE_STOCKAGE) || "[]"
+);
+
+let indexModification = -1;
+
+
+/* ==============================
+   SAUVEGARDER
+============================== */
+
+function sauvegarder() {
+
+    try {
+
+        localStorage.setItem(
+            CLE_STOCKAGE,
+            JSON.stringify(youtubeurs)
+        );
+
+        afficherYouTubeurs();
+
+    } catch (erreur) {
+
+        alert(
+            "Le stockage du navigateur est plein. " +
+            "Essaie avec moins de gros fichiers."
+        );
+
+    }
+
+}
+
+
+/* ==============================
+   CONVERTIR FICHIER
+============================== */
+
+function fichierVersBase64(fichier) {
+
+    return new Promise((resolve, reject) => {
+
+        const lecteur = new FileReader();
+
+        lecteur.onload = () => {
+            resolve(lecteur.result);
+        };
+
+        lecteur.onerror = reject;
+
+        lecteur.readAsDataURL(fichier);
+
+    });
+
+}
+
+
+/* ==============================
+   PROTECTION HTML
+============================== */
+
+function securiser(texte) {
+
+    return String(texte || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* ==============================
+   OUVRIR AJOUT
+============================== */
+
+function ouvrirAjout() {
+
+    indexModification = -1;
+
+    document.getElementById(
+        "titreFormulaire"
+    ).textContent = "Ajouter un YouTubeur";
+
+    document.getElementById("formulaire").reset();
+
+    document.getElementById(
+        "fenetreFormulaire"
+    ).classList.add("active");
+
+}
+
+
+/* ==============================
+   OUVRIR MODIFICATION
+============================== */
+
+function modifierYouTubeur(index) {
+
+    const y = youtubeurs[index];
+
+    indexModification = index;
+
+    document.getElementById(
+        "titreFormulaire"
+    ).textContent = "Modifier la fiche";
+
+    document.getElementById("nom").value =
+        y.nom || "";
+
+    document.getElementById("categorie").value =
+        y.categorie || "";
+
+    document.getElementById("description").value =
+        y.description || "";
+
+    document.getElementById("youtube").value =
+        y.youtube || "";
+
+    document.getElementById("autreLien").value =
+        y.autreLien || "";
+
+    document.getElementById("images").value = "";
+
+    document.getElementById("pdfs").value = "";
+
+    document.getElementById(
+        "fenetreFormulaire"
+    ).classList.add("active");
+
+}
+
+
+/* ==============================
+   FERMER FENÊTRE
+============================== */
+
+function fermerFenetre() {
+
+    document.getElementById(
+        "fenetreFormulaire"
+    ).classList.remove("active");
+
+}
+
+
+/* ==============================
+   FORMULAIRE
+============================== */
+
+document.getElementById(
+    "formulaire"
+).addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+
+    let youtubeur;
+
+
+    if (indexModification === -1) {
+
+        youtubeur = {
+
+            nom: "",
+            categorie: "",
+            description: "",
+            youtube: "",
+            autreLien: "",
+
+            images: [],
+
+            pdfs: []
+
+        };
+
+    } else {
+
+        youtubeur = youtubeurs[indexModification];
+
+    }
+
+
+    youtubeur.nom =
+        document.getElementById("nom").value.trim();
+
+    youtubeur.categorie =
+        document.getElementById("categorie").value.trim();
+
+    youtubeur.description =
+        document.getElementById("description").value.trim();
+
+    youtubeur.youtube =
+        document.getElementById("youtube").value.trim();
+
+    youtubeur.autreLien =
+        document.getElementById("autreLien").value.trim();
+
+
+    /* IMAGES */
+
+    const fichiersImages =
+        document.getElementById("images").files;
+
+
+    for (const fichier of fichiersImages) {
+
+        const base64 =
+            await fichierVersBase64(fichier);
+
+        youtubeur.images.push({
+
+            nom: fichier.name,
+
+            donnees: base64
+
+        });
+
+    }
+
+
+    /* PDF */
+
+    const fichiersPDF =
+        document.getElementById("pdfs").files;
+
+
+    for (const fichier of fichiersPDF) {
+
+        const base64 =
+            await fichierVersBase64(fichier);
+
+        youtubeur.pdfs.push({
+
+            nom: fichier.name,
+
+            donnees: base64
+
+        });
+
+    }
+
+
+    if (indexModification === -1) {
+
+        youtubeurs.push(youtubeur);
+
+    } else {
+
+        youtubeurs[indexModification] =
+            youtubeur;
+
+    }
+
+
+    sauvegarder();
+
+    fermerFenetre();
+
+});
+
+
+/* ==============================
+   AFFICHER LES YOUTUBEURS
+============================== */
+
+function afficherYouTubeurs() {
+
+    const grille =
+        document.getElementById("grille");
+
+    const recherche =
+        document.getElementById("recherche")
+        .value
+        .toLowerCase();
+
+
+    const resultat =
+        youtubeurs
+        .map((youtubeur, index) => ({
+            ...youtubeur,
+            index
+        }))
+        .filter(youtubeur => {
+
+            return (
+
+                youtubeur.nom +
+                " " +
+                youtubeur.categorie +
+                " " +
+                youtubeur.description
+
+            )
+            .toLowerCase()
+            .includes(recherche);
+
+        });
+
+
+    if (resultat.length === 0) {
+
+        grille.innerHTML = `
+            <div class="vide">
+                <h2>📭 Aucune fiche</h2>
+
+                <p>
+                    Clique sur
+                    « Ajouter un YouTubeur »
+                    pour créer ta première fiche.
+                </p>
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    grille.innerHTML =
+        resultat.map(youtubeur => {
+
+            const image =
+                youtubeur.images &&
+                youtubeur.images.length > 0
+                ? youtubeur.images[0].donnees
+                : null;
+
+
+            return `
+
+                <article class="carte">
+
+                    ${
+                        image
+
+                        ?
+
+                        `
+                        <img
+                            class="image-couverture"
+                            src="${image}"
+                        >
+                        `
+
+                        :
+
+                        `
+                        <div class="sans-image">
+                            ▶️
+                        </div>
+                        `
+                    }
+
+
+                    <div class="contenu-carte">
+
+                        <h3>
+                            ${securiser(youtubeur.nom)}
+                        </h3>
+
+
+                        <div class="informations">
+
+                            ${
+                                securiser(
+                                    youtubeur.categorie ||
+                                    "Sans catégorie"
+                                )
+                            }
+
+                            ·
+
+                            ${
+                                youtubeur.images
+                                ?.length || 0
+                            }
+
+                            image(s)
+
+                            ·
+
+                            ${
+                                youtubeur.pdfs
+                                ?.length || 0
+                            }
+
+                            PDF
+
+                        </div>
+
+
+                        <p class="description">
+
+                            ${securiser(
+                                (youtubeur.description || "")
+                                .substring(0, 150)
+                            )}
+
+                            ${
+                                (youtubeur.description || "")
+                                .length > 150
+                                ? "..."
+                                : ""
+                            }
+
+                        </p>
+
+
+                        <div class="actions">
+
+                            ${
+                                youtubeur.youtube
+
+                                ?
+
+                                `
+                                <button
+                                    class="bouton-secondaire"
+                                    onclick="ouvrirLien('${securiser(youtubeur.youtube)}')"
+                                >
+                                    ▶️ YouTube
+                                </button>
+                                `
+
+                                :
+
+                                ""
+                            }
+
+
+                            <button
+                                class="bouton-secondaire"
+                                onclick="voirDetails(${youtubeur.index})"
+                            >
+                                👁️ Voir
+                            </button>
+
+
+                            <button
+                                class="bouton-secondaire"
+                                onclick="modifierYouTubeur(${youtubeur.index})"
+                            >
+                                ✏️ Modifier
+                            </button>
+
+
+                            <button
+                                class="bouton-secondaire"
+                                onclick="supprimerYouTubeur(${youtubeur.index})"
+                            >
+                                🗑️
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            `;
+
+        }).join("");
+
+}
+
+
+/* ==============================
+   OUVRIR LIEN
+============================== */
+
+function ouvrirLien(lien) {
+
+    window.open(lien, "_blank");
+
+}
+
+
+/* ==============================
+   SUPPRIMER
+============================== */
+
+function supprimerYouTubeur(index) {
+
+    const confirmation =
+        confirm(
+            "Veux-tu vraiment supprimer cette fiche ?"
+        );
+
+
+    if (!confirmation) {
+        return;
+    }
+
+
+    youtubeurs.splice(index, 1);
+
+    sauvegarder();
+
+}
+
+
+/* ==============================
+   DETAILS
+============================== */
+
+function voirDetails(index) {
+
+    const y = youtubeurs[index];
+
+    document.getElementById(
+        "titreDetails"
+    ).textContent = y.nom;
+
+
+    let html = "";
+
+
+    html += `
+
+        <p>
+            <strong>Catégorie :</strong>
+            ${securiser(
+                y.categorie || "Non renseignée"
+            )}
+        </p>
+
+        <h3>📝 Description</h3>
+
+        <p>
+            ${securiser(
+                y.description ||
+                "Aucune description."
+            ).replace(/\n/g, "<br>")}
+        </p>
+
+    `;
+
+
+    if (y.youtube) {
+
+        html += `
+
+            <p>
+                ▶️
+                <a
+                    href="${securiser(y.youtube)}"
+                    target="_blank"
+                >
+                    Chaîne YouTube
+                </a>
+            </p>
+
+        `;
+
+    }
+
+
+    if (y.autreLien) {
+
+        html += `
+
+            <p>
+                🔗
+                <a
+                    href="${securiser(y.autreLien)}"
+                    target="_blank"
+                >
+                    Autre lien
+                </a>
+            </p>
+
+        `;
+
+    }
+
+
+    /* GALERIE */
+
+    html += `<h3>🖼️ Images</h3>`;
+
+    if (y.images && y.images.length > 0) {
+
+        html += `<div class="galerie">`;
+
+        y.images.forEach((image, numero) => {
+
+            html += `
+
+                <img
+                    src="${image.donnees}"
+                    alt="${securiser(image.nom)}"
+                    title="${securiser(image.nom)}"
+                    onclick="afficherImage('${image.donnees}')"
+                >
+
+            `;
+
+        });
+
+        html += `</div>`;
+
+    } else {
+
+        html += `
+            <p class="informations">
+                Aucune image.
+            </p>
+        `;
+
+    }
+
+
+    /* PDF */
+
+    html += `<h3>📄 Documents PDF</h3>`;
+
+
+    if (y.pdfs && y.pdfs.length > 0) {
+
+        y.pdfs.forEach(pdf => {
+
+            html += `
+
+                <a
+                    class="pdf"
+                    href="${pdf.donnees}"
+                    download="${securiser(pdf.nom)}"
+                >
+                    📄 ${securiser(pdf.nom)}
+                </a>
+
+            `;
+
+        });
+
+    } else {
+
+        html += `
+            <p class="informations">
+                Aucun PDF.
+            </p>
+        `;
+
+    }
+
+
+    document.getElementById(
+        "contenuDetails"
+    ).innerHTML = html;
+
+
+    document.getElementById(
+        "fenetreDetails"
+    ).classList.add("active");
+
+}
+
+
+/* ==============================
+   FERMER DETAILS
+============================== */
+
+function fermerDetails() {
+
+    document.getElementById(
+        "fenetreDetails"
+    ).classList.remove("active");
+
+}
+
+
+/* ==============================
+   IMAGE GRANDE
+============================== */
+
+function afficherImage(source) {
+
+    document.getElementById(
+        "imageGrande"
+    ).src = source;
+
+
+    document.getElementById(
+        "visionneuse"
+    ).classList.add("active");
+
+}
+
+
+/* ==============================
+   FERMER IMAGE
+============================== */
+
+function fermerImage() {
+
+    document.getElementById(
+        "visionneuse"
+    ).classList.remove("active");
+
+}
+
+
+/* ==============================
+   LANCEMENT
+============================== */
+
+afficherYouTubeurs();
+
+</script>
+
+</body>
+</html>
